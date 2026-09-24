@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, Heart, ShoppingBag, User, Menu, X, ChevronDown, Check } from "lucide-react";
@@ -15,6 +15,7 @@ export default function Navbar() {
   const { setIsSearchOpen, isMobileMenuOpen, setIsMobileMenuOpen } = useUI();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const accountMenuRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +23,25 @@ export default function Navbar() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Close account dropdown on click outside or Escape key
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(e.target)) {
+        setIsAccountOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsAccountOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const navLinksLeft = [
@@ -146,58 +166,68 @@ export default function Navbar() {
               </Link>
 
               {/* Account Dropdown */}
-              <div className="relative" onMouseLeave={() => setIsAccountOpen(false)}>
+              <div
+                ref={accountMenuRef}
+                className="relative"
+                onMouseEnter={() => setIsAccountOpen(true)}
+                onMouseLeave={() => setIsAccountOpen(false)}
+              >
                 <button
-                  onClick={() => setIsAccountOpen(!isAccountOpen)}
-                  onMouseEnter={() => setIsAccountOpen(true)}
-                  className="p-2 text-[#181615] hover:text-[#701A2B] transition-colors flex items-center gap-1"
+                  type="button"
+                  onClick={() => setIsAccountOpen((prev) => !prev)}
+                  className="p-2 text-[#181615] hover:text-[#701A2B] transition-colors flex items-center gap-1 cursor-pointer"
                   aria-label="Account Menu"
+                  aria-expanded={isAccountOpen}
                 >
                   <User className="w-5 h-5" />
                 </button>
 
                 {isAccountOpen && (
-                  <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-[#E5DED4] py-2 z-50 animate-fade-in text-left">
-                    <div className="px-4 py-2 border-b border-[#FAF7F2]">
-                      <p className="text-xs font-bold text-[#181615]">Neha Sharma</p>
-                      <p className="text-[11px] text-[#77716A] truncate">neha.sharma@gmail.com</p>
-                    </div>
-                    <Link
-                      href="/account"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B]"
-                    >
-                      My Account Hub
-                    </Link>
-                    <Link
-                      href="/account/orders"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B]"
-                    >
-                      My Orders & Returns
-                    </Link>
-                    <Link
-                      href="/account/track-order"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B]"
-                    >
-                      Track Order Status
-                    </Link>
-                    <Link
-                      href="/account/addresses"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B]"
-                    >
-                      Saved Addresses
-                    </Link>
-                    <div className="border-t border-[#FAF7F2] mt-1 pt-1">
-                      <Link
-                        href="/account"
-                        onClick={() => setIsAccountOpen(false)}
-                        className="block px-4 py-2 text-xs font-medium text-[#701A2B] hover:bg-[#FAF7F2]"
-                      >
-                        Sign Out
-                      </Link>
+                  <div className="absolute right-0 top-full pt-1 z-50 w-56 animate-fade-in text-left">
+                    <div className="bg-white rounded-2xl shadow-2xl border border-[#E5DED4] py-2 overflow-hidden">
+                      <div className="px-4 py-2.5 border-b border-[#FAF7F2] bg-[#FAF7F2]/50">
+                        <p className="text-xs font-bold text-[#181615]">Neha Sharma</p>
+                        <p className="text-[11px] text-[#77716A] truncate">neha.sharma@gmail.com</p>
+                      </div>
+                      <div className="py-1">
+                        <Link
+                          href="/account"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B] transition-colors"
+                        >
+                          My Account Hub
+                        </Link>
+                        <Link
+                          href="/account/orders"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B] transition-colors"
+                        >
+                          My Orders & Returns
+                        </Link>
+                        <Link
+                          href="/account/track-order"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B] transition-colors"
+                        >
+                          Track Order Status
+                        </Link>
+                        <Link
+                          href="/account/addresses"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="block px-4 py-2 text-xs font-medium text-[#181615] hover:bg-[#FAF7F2] hover:text-[#701A2B] transition-colors"
+                        >
+                          Saved Addresses
+                        </Link>
+                      </div>
+                      <div className="border-t border-[#FAF7F2] pt-1 mt-1">
+                        <Link
+                          href="/account"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="block px-4 py-2 text-xs font-medium text-[#701A2B] hover:bg-[#701A2B]/5 transition-colors"
+                        >
+                          Sign Out
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 )}

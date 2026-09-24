@@ -325,36 +325,48 @@ export default function CollectionTemplate({
             <div className="py-4 space-y-6 flex-1">
               {/* Category */}
               <div>
-                <h4 className="text-xs font-bold uppercase text-[#181615] mb-2">Category</h4>
-                <div className="space-y-1.5">
-                  {categories.map((c) => (
-                    <button
-                      key={c.slug}
-                      onClick={() => setSelectedCategory(c.slug)}
-                      className={`block w-full text-left px-2.5 py-1.5 rounded-lg text-xs ${
-                        selectedCategory === c.slug
-                          ? "bg-[#701A2B] text-white font-bold"
-                          : "text-[#181615] hover:bg-[#FAF7F2]"
-                      }`}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#181615] mb-2.5">Category</h4>
+                <div className="space-y-1">
+                  {categories.map((c) => {
+                    const isSelected = selectedCategory === c.slug;
+                    return (
+                      <button
+                        key={c.slug}
+                        onClick={() => setSelectedCategory(c.slug)}
+                        className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-colors text-left ${
+                          isSelected
+                            ? "bg-[#701A2B]/10 text-[#701A2B] font-bold"
+                            : "text-[#4A453F] hover:bg-[#FAF7F2]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center ${
+                              isSelected ? "border-[#701A2B] bg-[#701A2B]" : "border-[#C5BCB0] bg-white"
+                            }`}
+                          >
+                            {isSelected && <span className="w-1 h-1 rounded-full bg-white" />}
+                          </div>
+                          <span>{c.name}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Sizes */}
-              <div>
-                <h4 className="text-xs font-bold uppercase text-[#181615] mb-2">Sizes</h4>
+              <div className="pt-4 border-t border-[#E5DED4]">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#181615] mb-2.5">Sizes (IND/UK)</h4>
                 <div className="grid grid-cols-4 gap-1.5">
                   {availableSizes.map((sz) => (
                     <button
                       key={sz}
                       onClick={() => toggleSize(sz)}
-                      className={`py-2 text-xs font-bold rounded-lg border ${
+                      className={`py-2 text-xs font-bold rounded-xl border transition-all ${
                         selectedSizes.includes(sz)
-                          ? "bg-[#701A2B] text-white border-[#701A2B]"
-                          : "border-[#E5DED4]"
+                          ? "bg-[#701A2B] text-white border-[#701A2B] shadow-xs"
+                          : "border-[#E5DED4] bg-[#FAF7F2] text-[#181615]"
                       }`}
                     >
                       {sz}
@@ -363,10 +375,38 @@ export default function CollectionTemplate({
                 </div>
               </div>
 
+              {/* Colors */}
+              <div className="pt-4 border-t border-[#E5DED4]">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#181615] mb-2.5">Color</h4>
+                <div className="flex flex-wrap gap-2">
+                  {colorOptions.map((col) => {
+                    const isSelected = selectedColors.includes(col.name);
+                    return (
+                      <button
+                        key={col.name}
+                        onClick={() => toggleColor(col.name)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
+                          isSelected
+                            ? "border-[#701A2B] bg-[#701A2B]/10 text-[#701A2B]"
+                            : "border-[#E5DED4] bg-white text-[#4A453F]"
+                        }`}
+                      >
+                        <span
+                          className="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+                          style={{ backgroundColor: col.hex }}
+                        />
+                        <span>{col.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Price */}
-              <div>
+              <div className="pt-4 border-t border-[#E5DED4]">
                 <div className="flex items-center justify-between text-xs font-bold text-[#181615] mb-2">
-                  <span>Max Price: ₹{maxPrice}</span>
+                  <span className="uppercase tracking-wider">Max Price</span>
+                  <span className="text-[#701A2B]">₹{maxPrice.toLocaleString("en-IN")}</span>
                 </div>
                 <input
                   type="range"
@@ -375,7 +415,7 @@ export default function CollectionTemplate({
                   step="100"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-[#701A2B]"
+                  className="w-full accent-[#701A2B] h-1.5 bg-[#E5DED4] rounded-lg"
                 />
               </div>
             </div>
@@ -383,13 +423,13 @@ export default function CollectionTemplate({
             <div className="pt-4 border-t border-[#E5DED4] flex gap-2">
               <button
                 onClick={resetFilters}
-                className="flex-1 py-2.5 border border-[#E5DED4] rounded-xl text-xs font-bold"
+                className="flex-1 py-2.5 border border-[#E5DED4] rounded-xl text-xs font-bold hover:bg-[#FAF7F2] transition-colors cursor-pointer"
               >
                 Reset
               </button>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="flex-1 py-2.5 bg-[#701A2B] text-white rounded-xl text-xs font-bold"
+                className="flex-1 py-2.5 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-sm"
               >
                 Apply
               </button>

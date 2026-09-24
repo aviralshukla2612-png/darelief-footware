@@ -41,10 +41,10 @@ export default function AccountLayout({ children }) {
   };
 
   return (
-    <div className="w-full bg-[#FAF7F2] py-8 sm:py-12 border-b border-[#E5DED4]">
+    <div className="w-full bg-[#FAF7F2] py-6 sm:py-10 border-b border-[#E5DED4]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <nav className="text-xs text-[#77716A] mb-6 flex items-center gap-1.5">
+        <nav className="text-xs text-[#77716A] mb-4 sm:mb-6 flex items-center gap-1.5">
           <Link href="/" className="hover:text-[#701A2B]">
             Home
           </Link>
@@ -52,9 +52,55 @@ export default function AccountLayout({ children }) {
           <span className="text-[#181615] font-semibold">Account Hub</span>
         </nav>
 
+        {/* Mobile Horizontal Navigation Tabs (Visible on screens < lg) */}
+        <div className="lg:hidden mb-6 space-y-3">
+          {/* Mobile Profile Card */}
+          <div className="p-3.5 bg-white rounded-2xl border border-[#E5DED4] flex items-center justify-between shadow-xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#701A2B] text-white flex items-center justify-center font-bold text-sm">
+                {userProfile.name.charAt(0)}
+              </div>
+              <div>
+                <h3 className="text-xs font-bold text-[#181615]">{userProfile.name}</h3>
+                <p className="text-[10px] text-[#77716A]">{userProfile.email}</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowLogoutModal(true)}
+              className="p-2 text-[#C62828] hover:bg-red-50 rounded-xl transition-colors"
+              title="Logout"
+              aria-label="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Horizontal Scrollable Navigation Strip */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-all ${
+                    active
+                      ? "bg-[#701A2B] text-white shadow-xs"
+                      : "bg-white border border-[#E5DED4] text-[#181615] hover:bg-[#EFE8DA]"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Account Sidebar Navigation (3 cols) */}
-          <aside className="lg:col-span-3 bg-white rounded-3xl border border-[#E5DED4] p-5 shadow-xs space-y-4">
+          {/* Desktop Account Sidebar Navigation (3 cols, hidden on mobile) */}
+          <aside className="hidden lg:block lg:col-span-3 bg-white rounded-3xl border border-[#E5DED4] p-5 shadow-xs space-y-4">
             {/* User Mini Card */}
             <div className="p-4 bg-[#FAF7F2] rounded-2xl border border-[#E5DED4] flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-[#701A2B] text-white flex items-center justify-center font-bold text-base">
@@ -104,8 +150,8 @@ export default function AccountLayout({ children }) {
             </nav>
           </aside>
 
-          {/* Main Account Area (9 cols) */}
-          <main className="lg:col-span-9 bg-white rounded-3xl border border-[#E5DED4] p-6 sm:p-8 shadow-xs">
+          {/* Main Account Area (9 cols on desktop, full width on mobile) */}
+          <main className="lg:col-span-9 bg-white rounded-3xl border border-[#E5DED4] p-5 sm:p-8 shadow-xs w-full overflow-hidden">
             {children}
           </main>
         </div>
@@ -121,11 +167,11 @@ export default function AccountLayout({ children }) {
           />
 
           {/* Luxury Modal Card */}
-          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-8 sm:p-10 text-center shadow-2xl space-y-5 animate-scale-up">
+          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-6 sm:p-10 text-center shadow-2xl space-y-5 animate-scale-up">
             {/* Close X */}
             <button
               onClick={() => setShowLogoutModal(false)}
-              className="absolute top-4 right-4 p-2 text-[#77716A] hover:text-[#181615] hover:bg-[#FAF7F2] rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 text-[#77716A] hover:text-[#181615] hover:bg-[#FAF7F2] rounded-full transition-colors cursor-pointer"
               aria-label="Close"
             >
               <X className="w-5 h-5" />

@@ -43,6 +43,11 @@ export default function ProductDetailView({ product }) {
   const [pincode, setPincode] = useState("");
   const [pincodeStatus, setPincodeStatus] = useState(null);
   const [activeTab, setActiveTab] = useState("description"); // description | details | fit | shipping
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewAuthor, setReviewAuthor] = useState("");
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState(false);
 
   if (!product) {
     return (
@@ -484,8 +489,11 @@ export default function ProductDetailView({ product }) {
             </div>
 
             <button
-              onClick={() => alert("Review submitted! Thank you for sharing your experience.")}
-              className="px-5 py-2.5 bg-[#181615] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#701A2B] transition-colors"
+              onClick={() => {
+                setReviewSuccess(false);
+                setIsReviewModalOpen(true);
+              }}
+              className="px-5 py-2.5 bg-[#181615] text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-[#701A2B] transition-colors cursor-pointer shadow-xs"
             >
               Write A Review
             </button>
@@ -530,6 +538,149 @@ export default function ProductDetailView({ product }) {
           </div>
         )}
       </div>
+
+      {/* Luxury Centered Write Review Modal */}
+      {isReviewModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#181615]/70 backdrop-blur-md animate-fade-in"
+          onClick={() => setIsReviewModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-white rounded-3xl border border-[#E5DED4] p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {reviewSuccess ? (
+              <div className="text-center py-6 space-y-4 animate-fade-in">
+                <div className="w-16 h-16 rounded-full bg-[#701A2B]/10 text-[#701A2B] flex items-center justify-center mx-auto border-2 border-[#701A2B]/20">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#701A2B]">
+                    VERIFIED REVIEW
+                  </span>
+                  <h3 className="font-serif-luxury text-2xl text-[#181615] font-bold">
+                    Thank You For Your Feedback!
+                  </h3>
+                  <p className="text-xs text-[#77716A] max-w-sm mx-auto leading-relaxed pt-1">
+                    Your review for <strong>{product.name}</strong> has been received and will be displayed after our quality moderation check.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsReviewModalOpen(false);
+                    setReviewSuccess(false);
+                    setReviewAuthor("");
+                    setReviewComment("");
+                  }}
+                  className="px-8 py-3 bg-[#181615] hover:bg-[#701A2B] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+                >
+                  Back to Product
+                </button>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setReviewSuccess(true);
+                }}
+                className="space-y-5"
+              >
+                <div className="flex items-center justify-between pb-4 border-b border-[#FAF7F2]">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#701A2B]">
+                      DARELIEF VERIFIED
+                    </span>
+                    <h3 className="font-serif-luxury text-2xl font-bold text-[#181615]">
+                      Write A Review
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewModalOpen(false)}
+                    className="w-8 h-8 rounded-full bg-[#FAF7F2] hover:bg-[#E5DED4] text-[#181615] flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Rating selection */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-[#181615] uppercase tracking-wider">
+                    Your Overall Rating
+                  </label>
+                  <div className="flex items-center gap-1.5 pt-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewRating(star)}
+                        className="p-1 hover:scale-110 transition-transform cursor-pointer"
+                      >
+                        <Star
+                          className={`w-6 h-6 ${
+                            star <= reviewRating
+                              ? "fill-[#C5A059] text-[#C5A059]"
+                              : "text-[#E5DED4]"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                    <span className="text-xs font-semibold text-[#77716A] ml-2">
+                      {reviewRating === 5 ? "Exceptional" : reviewRating === 4 ? "Very Good" : reviewRating === 3 ? "Good" : "Average"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Author name */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-[#181615] uppercase tracking-wider">
+                    Your Name
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Pooja Sharma"
+                    value={reviewAuthor}
+                    onChange={(e) => setReviewAuthor(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#FAF7F2] border border-[#E5DED4] rounded-xl text-xs text-[#181615] focus:outline-none focus:border-[#701A2B]"
+                  />
+                </div>
+
+                {/* Review comment */}
+                <div className="space-y-1.5">
+                  <label className="block text-xs font-bold text-[#181615] uppercase tracking-wider">
+                    Review Details
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="How does the footwear fit? Tell us about comfort, arch support, and styling..."
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#FAF7F2] border border-[#E5DED4] rounded-xl text-xs text-[#181615] focus:outline-none focus:border-[#701A2B] resize-none"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewModalOpen(false)}
+                    className="px-5 py-3 rounded-xl border border-[#E5DED4] text-xs font-bold text-[#77716A] hover:text-[#181615] transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-7 py-3 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shadow-md"
+                  >
+                    Submit Review
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

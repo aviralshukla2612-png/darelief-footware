@@ -21,6 +21,7 @@ export default function AccountLayout({ children }) {
   const router = useRouter();
   const { userProfile } = useUI();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   const navItems = [
     { label: "My Account", href: "/account", icon: User },
@@ -40,6 +41,9 @@ export default function AccountLayout({ children }) {
     return pathname.startsWith(href);
   };
 
+  const currentNavItem = navItems.find((item) => isActive(item.href)) || navItems[0];
+  const CurrentIcon = currentNavItem.icon;
+
   return (
     <div className="w-full bg-[#FAF7F2] py-6 sm:py-10 border-b border-[#E5DED4]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,51 +54,92 @@ export default function AccountLayout({ children }) {
           </Link>
           <span>/</span>
           <span className="text-[#181615] font-semibold">Account Hub</span>
+          {currentNavItem && (
+            <>
+              <span>/</span>
+              <span className="text-[#701A2B] font-semibold">{currentNavItem.label}</span>
+            </>
+          )}
         </nav>
 
-        {/* Mobile Horizontal Navigation Tabs (Visible on screens < lg) */}
+        {/* Mobile Account Section Selector Dropdown (No horizontal scrolling!) */}
         <div className="lg:hidden mb-6 space-y-3">
-          {/* Mobile Profile Card */}
-          <div className="p-3.5 bg-white rounded-2xl border border-[#E5DED4] flex items-center justify-between shadow-xs">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#701A2B] text-white flex items-center justify-center font-bold text-sm">
-                {userProfile.name.charAt(0)}
+          {/* Mobile Profile & Switcher Card */}
+          <div className="p-4 bg-white rounded-2xl border border-[#E5DED4] shadow-xs space-y-3.5">
+            <div className="flex items-center justify-between pb-3 border-b border-[#FAF7F2]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#701A2B] text-white flex items-center justify-center font-bold text-sm">
+                  {userProfile.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold text-[#181615]">{userProfile.name}</h3>
+                  <p className="text-[10px] text-[#77716A]">{userProfile.email}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-xs font-bold text-[#181615]">{userProfile.name}</h3>
-                <p className="text-[10px] text-[#77716A]">{userProfile.email}</p>
-              </div>
+              <button
+                onClick={() => setShowLogoutModal(true)}
+                className="p-2 text-[#C62828] hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                title="Logout"
+                aria-label="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
-            <button
-              onClick={() => setShowLogoutModal(true)}
-              className="p-2 text-[#C62828] hover:bg-red-50 rounded-xl transition-colors"
-              title="Logout"
-              aria-label="Logout"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
 
-          {/* Horizontal Scrollable Navigation Strip */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider whitespace-nowrap shrink-0 transition-all ${
-                    active
-                      ? "bg-[#701A2B] text-white shadow-xs"
-                      : "bg-white border border-[#E5DED4] text-[#181615] hover:bg-[#EFE8DA]"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+            {/* Section Switcher Trigger */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsMobileNavOpen((prev) => !prev)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-[#FAF7F2] hover:bg-[#EFE8DA] border border-[#E5DED4] rounded-xl text-xs font-bold uppercase tracking-wider text-[#181615] transition-colors cursor-pointer"
+                aria-expanded={isMobileNavOpen}
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 rounded-lg bg-[#701A2B]/10 text-[#701A2B] flex items-center justify-center">
+                    <CurrentIcon className="w-3.5 h-3.5" />
+                  </div>
+                  <span>{currentNavItem.label}</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[#77716A]">
+                  <span className="text-[10px] font-semibold normal-case text-[#9B948C]">
+                    {isMobileNavOpen ? "close menu" : "switch tab"}
+                  </span>
+                  <ChevronRight
+                    className={`w-4 h-4 text-[#701A2B] transition-transform duration-300 ${
+                      isMobileNavOpen ? "rotate-90" : ""
+                    }`}
+                  />
+                </div>
+              </button>
+
+              {/* Collapsible Mobile Section Menu */}
+              {isMobileNavOpen && (
+                <div className="mt-2 bg-white border border-[#E5DED4] rounded-2xl shadow-xl p-2 space-y-1 animate-fade-in">
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    const active = isActive(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setIsMobileNavOpen(false)}
+                        className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-bold uppercase tracking-wide transition-colors ${
+                          active
+                            ? "bg-[#701A2B] text-white shadow-xs"
+                            : "text-[#181615] hover:bg-[#FAF7F2]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="w-4 h-4" />
+                          <span>{item.label}</span>
+                        </div>
+                        {active && <span className="text-[10px] font-bold text-white/80">Active</span>}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

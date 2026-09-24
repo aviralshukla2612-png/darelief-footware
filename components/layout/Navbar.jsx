@@ -67,23 +67,23 @@ export default function Navbar() {
           : "bg-[#FAF7F2] border-b border-[#E5DED4]"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Mobile menu button */}
-          <div className="flex items-center lg:hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Mobile menu & search buttons (Left) */}
+          <div className="flex items-center gap-0.5 sm:gap-1 lg:hidden shrink-0">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-[#181615] hover:text-[#701A2B] focus:outline-none"
+              className="p-1.5 sm:p-2 text-[#181615] hover:text-[#701A2B] focus:outline-none cursor-pointer"
               aria-label="Toggle Menu"
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
             </button>
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 text-[#181615] hover:text-[#701A2B] ml-1"
+              className="p-1.5 sm:p-2 text-[#181615] hover:text-[#701A2B] cursor-pointer"
               aria-label="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
 
@@ -91,7 +91,7 @@ export default function Navbar() {
           <nav className="hidden lg:flex items-center space-x-7">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="flex items-center gap-2 text-[#181615] hover:text-[#701A2B] transition-colors text-xs font-semibold tracking-widest uppercase group"
+              className="flex items-center gap-2 text-[#181615] hover:text-[#701A2B] transition-colors text-xs font-semibold tracking-widest uppercase group cursor-pointer"
             >
               <Search className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span>Search</span>
@@ -116,12 +116,12 @@ export default function Navbar() {
           </nav>
 
           {/* Center Brand Logo */}
-          <div className="flex-1 lg:flex-initial text-center">
+          <div className="flex-1 lg:flex-initial text-center px-1">
             <Link href="/" className="inline-block text-center group">
-              <span className="block font-serif-luxury text-2xl sm:text-3xl lg:text-3xl tracking-[0.22em] text-[#181615] font-bold uppercase transition-transform group-hover:scale-[1.01]">
+              <span className="block font-serif-luxury text-xl sm:text-2xl lg:text-3xl tracking-[0.16em] sm:tracking-[0.22em] text-[#181615] font-bold uppercase transition-transform group-hover:scale-[1.01] leading-none">
                 DARELIEF
               </span>
-              <span className="block text-[9px] sm:text-[10px] tracking-[0.35em] text-[#701A2B] font-semibold uppercase -mt-0.5">
+              <span className="block text-[8px] sm:text-[9px] lg:text-[10px] tracking-[0.26em] sm:tracking-[0.35em] text-[#701A2B] font-semibold uppercase mt-0.5 sm:mt-1">
                 WALKWEAR
               </span>
             </Link>
@@ -249,16 +249,16 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile Right Icons */}
-          <div className="flex items-center space-x-2 lg:hidden">
+          {/* Mobile Right Icons (Compact, balanced, no overflow) */}
+          <div className="flex items-center gap-0.5 sm:gap-1 lg:hidden shrink-0">
             <Link
               href="/account/wishlist"
-              className="relative p-2 text-[#181615] hover:text-[#701A2B]"
+              className="relative p-1.5 sm:p-2 text-[#181615] hover:text-[#701A2B]"
               aria-label="Wishlist"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#701A2B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#701A2B] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">
                   {wishlistCount}
                 </span>
               )}
@@ -266,20 +266,20 @@ export default function Navbar() {
 
             <Link
               href="/account"
-              className="p-2 text-[#181615] hover:text-[#701A2B]"
+              className="p-1.5 sm:p-2 text-[#181615] hover:text-[#701A2B]"
               aria-label="Account"
             >
-              <User className="w-5 h-5" />
+              <User className="w-4 h-4 sm:w-5 sm:h-5" />
             </Link>
 
             <Link
               href="/cart"
-              className="relative p-2 text-[#181615] hover:text-[#701A2B]"
+              className="relative p-1.5 sm:p-2 text-[#181615] hover:text-[#701A2B]"
               aria-label="Bag"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
               {totalItemsCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#701A2B] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#701A2B] text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-xs">
                   {totalItemsCount}
                 </span>
               )}

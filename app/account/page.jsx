@@ -17,7 +17,6 @@ export default function AccountOverviewPage() {
     updateProfile(formData);
     setIsEditing(false);
     setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 4000);
   };
 
   const latestOrder = orders[0];
@@ -42,19 +41,12 @@ export default function AccountOverviewPage() {
 
           <button
             onClick={() => setIsEditing(!isEditing)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-[#E5DED4] hover:border-[#701A2B] rounded-xl text-xs font-bold text-[#181615] hover:text-[#701A2B] transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[#E5DED4] hover:border-[#701A2B] rounded-xl text-xs font-bold text-[#181615] hover:text-[#701A2B] transition-colors cursor-pointer"
           >
             <Edit3 className="w-3.5 h-3.5" />
             <span>{isEditing ? "Cancel Edit" : "Edit Profile"}</span>
           </button>
         </div>
-
-        {savedSuccess && (
-          <div className="p-3.5 bg-[#2E7D32]/10 border border-[#2E7D32]/20 rounded-xl text-xs text-[#2E7D32] flex items-center gap-2 animate-fade-in">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Profile information updated successfully.</span>
-          </div>
-        )}
 
         {/* Profile Edit Form or Overview Cards */}
         {isEditing ? (
@@ -220,6 +212,43 @@ export default function AccountOverviewPage() {
           </div>
         </div>
       </div>
+
+      {/* Luxury Centered Profile Saved Confirmation Modal */}
+      {savedSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div
+            className="fixed inset-0 bg-[#181615]/65 backdrop-blur-md"
+            onClick={() => setSavedSuccess(false)}
+          />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-8 text-center shadow-2xl space-y-5 animate-scale-up">
+            <div className="w-16 h-16 rounded-full bg-[#2E7D32]/10 border border-[#2E7D32]/20 text-[#2E7D32] mx-auto flex items-center justify-center shadow-inner">
+              <CheckCircle2 className="w-8 h-8 stroke-[2]" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#2E7D32]">
+                PROFILE UPDATED
+              </span>
+              <h3 className="font-serif-luxury text-2xl font-bold text-[#181615]">
+                Changes Saved Successfully!
+              </h3>
+              <p className="text-xs sm:text-sm text-[#77716A] leading-relaxed pt-1">
+                Your profile information has been securely updated in your Darelief account.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setSavedSuccess(false)}
+                className="w-full py-3.5 bg-[#181615] hover:bg-[#701A2B] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AccountLayout>
   );
 }

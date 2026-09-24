@@ -10,6 +10,7 @@ export default function AddressesPage() {
   const [modalMode, setModalMode] = useState(null); // "add" | "edit" | null
   const [activeAddr, setActiveAddr] = useState(null);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [successModal, setSuccessModal] = useState(null); // { title, message, tag } | null
 
   const initialForm = {
     tag: "HOME",
@@ -37,18 +38,29 @@ export default function AddressesPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const isEdit = modalMode === "edit";
     if (modalMode === "add") {
       addAddress(formData);
     } else if (modalMode === "edit" && activeAddr) {
       updateAddress(activeAddr.id, formData);
     }
     setModalMode(null);
+    setSuccessModal({
+      type: isEdit ? "edit" : "add",
+      title: isEdit ? "Address Updated Successfully!" : "Address Added Successfully!",
+      message: `Your delivery address details for "${formData.fullName} (${formData.tag})" have been updated in your address book.`
+    });
   };
 
   const handleConfirmDelete = () => {
     if (deleteTargetId) {
       deleteAddress(deleteTargetId);
       setDeleteTargetId(null);
+      setSuccessModal({
+        type: "delete",
+        title: "Address Deleted Successfully",
+        message: "The delivery address has been removed from your saved address book."
+      });
     }
   };
 
@@ -310,6 +322,66 @@ export default function AddressesPage() {
                 className="w-full py-3 bg-[#C62828] hover:bg-[#B71C1C] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium Centered Action Confirmation Success Modal */}
+      {successModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div
+            className="fixed inset-0 bg-[#181615]/65 backdrop-blur-md"
+            onClick={() => setSuccessModal(null)}
+          />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-8 text-center shadow-2xl space-y-5 animate-scale-up">
+            <button
+              onClick={() => setSuccessModal(null)}
+              className="absolute top-4 right-4 p-2 text-[#77716A] hover:text-[#181615] hover:bg-[#FAF7F2] rounded-full transition-colors cursor-pointer"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Circular Icon (Green check for edit/add, maroon/neutral for delete) */}
+            <div
+              className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center shadow-inner ${
+                successModal.type === "delete"
+                  ? "bg-[#701A2B]/10 border border-[#701A2B]/20 text-[#701A2B]"
+                  : "bg-[#2E7D32]/10 border border-[#2E7D32]/20 text-[#2E7D32]"
+              }`}
+            >
+              {successModal.type === "delete" ? (
+                <Trash2 className="w-7 h-7 stroke-[2]" />
+              ) : (
+                <CheckCircle2 className="w-8 h-8 stroke-[2]" />
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <span
+                className={`text-[11px] font-bold uppercase tracking-[0.2em] ${
+                  successModal.type === "delete" ? "text-[#701A2B]" : "text-[#2E7D32]"
+                }`}
+              >
+                {successModal.type === "delete" ? "ADDRESS REMOVED" : "ADDRESS BOOK UPDATED"}
+              </span>
+              <h3 className="font-serif-luxury text-2xl font-bold text-[#181615]">
+                {successModal.title}
+              </h3>
+              <p className="text-xs sm:text-sm text-[#77716A] leading-relaxed pt-1">
+                {successModal.message}
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => setSuccessModal(null)}
+                className="w-full py-3.5 bg-[#181615] hover:bg-[#701A2B] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer"
+              >
+                Continue
               </button>
             </div>
           </div>

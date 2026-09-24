@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -11,7 +11,8 @@ import {
   MapPin,
   LogOut,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  X
 } from "lucide-react";
 import { useUI } from "@/context/UIContext";
 
@@ -19,6 +20,7 @@ export default function AccountLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { userProfile } = useUI();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const navItems = [
     { label: "My Account", href: "/account", icon: User },
@@ -28,10 +30,9 @@ export default function AccountLayout({ children }) {
     { label: "Addresses", href: "/account/addresses", icon: MapPin }
   ];
 
-  const handleLogout = () => {
-    if (confirm("Are you sure you want to log out of your session?")) {
-      router.push("/");
-    }
+  const handleConfirmLogout = () => {
+    setShowLogoutModal(false);
+    router.push("/");
   };
 
   const isActive = (href) => {
@@ -92,8 +93,8 @@ export default function AccountLayout({ children }) {
               })}
 
               <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold tracking-wide uppercase text-[#C62828] hover:bg-red-50 transition-colors"
+                onClick={() => setShowLogoutModal(true)}
+                className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold tracking-wide uppercase text-[#C62828] hover:bg-red-50 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <LogOut className="w-4 h-4" />
@@ -109,6 +110,65 @@ export default function AccountLayout({ children }) {
           </main>
         </div>
       </div>
+
+      {/* Premium Centered Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+          {/* Frosted Dark Backdrop */}
+          <div
+            className="fixed inset-0 bg-[#181615]/65 backdrop-blur-md transition-opacity"
+            onClick={() => setShowLogoutModal(false)}
+          />
+
+          {/* Luxury Modal Card */}
+          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-8 sm:p-10 text-center shadow-2xl space-y-5 animate-scale-up">
+            {/* Close X */}
+            <button
+              onClick={() => setShowLogoutModal(false)}
+              className="absolute top-4 right-4 p-2 text-[#77716A] hover:text-[#181615] hover:bg-[#FAF7F2] rounded-full transition-colors"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Circular Icon */}
+            <div className="w-16 h-16 rounded-full bg-[#701A2B]/10 border border-[#701A2B]/20 text-[#701A2B] mx-auto flex items-center justify-center shadow-inner">
+              <LogOut className="w-7 h-7 text-[#701A2B]" />
+            </div>
+
+            {/* Text */}
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#701A2B]">
+                SESSION SECURITY
+              </span>
+              <h3 className="font-serif-luxury text-2xl font-bold text-[#181615]">
+                Sign Out Confirmation
+              </h3>
+              <p className="text-xs sm:text-sm text-[#77716A] leading-relaxed pt-1">
+                Are you sure you want to log out of your session? You can sign back in at any time to access your orders and saved addresses.
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="pt-2 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setShowLogoutModal(false)}
+                className="w-full py-3 bg-[#FAF7F2] hover:bg-[#EFE8DA] text-[#181615] border border-[#E5DED4] rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmLogout}
+                className="w-full py-3 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md hover:shadow-lg cursor-pointer"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

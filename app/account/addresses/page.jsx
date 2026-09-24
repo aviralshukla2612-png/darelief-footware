@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Plus, Edit2, Trash2, CheckCircle2, X } from "lucide-react";
+import { MapPin, Plus, Edit2, Trash2, CheckCircle2, X, AlertTriangle } from "lucide-react";
 import AccountLayout from "@/components/account/AccountLayout";
 import { useUI } from "@/context/UIContext";
 
@@ -9,6 +9,7 @@ export default function AddressesPage() {
   const { addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useUI();
   const [modalMode, setModalMode] = useState(null); // "add" | "edit" | null
   const [activeAddr, setActiveAddr] = useState(null);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
 
   const initialForm = {
     tag: "HOME",
@@ -44,6 +45,13 @@ export default function AddressesPage() {
     setModalMode(null);
   };
 
+  const handleConfirmDelete = () => {
+    if (deleteTargetId) {
+      deleteAddress(deleteTargetId);
+      setDeleteTargetId(null);
+    }
+  };
+
   return (
     <AccountLayout>
       <div className="space-y-6">
@@ -62,7 +70,7 @@ export default function AddressesPage() {
 
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors shadow-md cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Address</span>
@@ -103,7 +111,7 @@ export default function AddressesPage() {
                 {!addr.isDefault ? (
                   <button
                     onClick={() => setDefaultAddress(addr.id)}
-                    className="text-xs font-bold text-[#701A2B] hover:underline"
+                    className="text-xs font-bold text-[#701A2B] hover:underline cursor-pointer"
                   >
                     Set as Default
                   </button>
@@ -114,16 +122,14 @@ export default function AddressesPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleOpenEdit(addr)}
-                    className="p-1.5 text-[#77716A] hover:text-[#181615] hover:bg-white rounded-lg transition-colors"
+                    className="p-1.5 text-[#77716A] hover:text-[#181615] hover:bg-white rounded-lg transition-colors cursor-pointer"
                     title="Edit address"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                   </button>
                   <button
-                    onClick={() => {
-                      if (confirm("Delete this address?")) deleteAddress(addr.id);
-                    }}
-                    className="p-1.5 text-[#77716A] hover:text-[#C62828] hover:bg-white rounded-lg transition-colors"
+                    onClick={() => setDeleteTargetId(addr.id)}
+                    className="p-1.5 text-[#77716A] hover:text-[#C62828] hover:bg-white rounded-lg transition-colors cursor-pointer"
                     title="Delete address"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -147,7 +153,7 @@ export default function AddressesPage() {
               <h3 className="font-serif-luxury text-xl font-bold text-[#181615]">
                 {modalMode === "add" ? "Add New Address" : "Edit Address"}
               </h3>
-              <button onClick={() => setModalMode(null)} className="p-1 text-[#77716A]">
+              <button onClick={() => setModalMode(null)} className="p-1 text-[#77716A] cursor-pointer">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -159,7 +165,7 @@ export default function AddressesPage() {
                     key={tag}
                     type="button"
                     onClick={() => setFormData({ ...formData, tag })}
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all ${
+                    className={`px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
                       formData.tag === tag
                         ? "bg-[#701A2B] text-white border-[#701A2B]"
                         : "border-[#E5DED4] text-[#77716A]"
@@ -243,18 +249,69 @@ export default function AddressesPage() {
                 <button
                   type="button"
                   onClick={() => setModalMode(null)}
-                  className="px-4 py-2 border border-[#E5DED4] rounded-lg font-semibold text-[#77716A]"
+                  className="px-4 py-2 border border-[#E5DED4] rounded-lg font-semibold text-[#77716A] cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-lg font-bold uppercase tracking-wider"
+                  className="px-6 py-2 bg-[#701A2B] hover:bg-[#8E2337] text-white rounded-lg font-bold uppercase tracking-wider cursor-pointer"
                 >
                   Save Address
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Premium Centered Delete Address Confirmation Modal */}
+      {deleteTargetId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div
+            className="fixed inset-0 bg-[#181615]/65 backdrop-blur-md"
+            onClick={() => setDeleteTargetId(null)}
+          />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-3xl border border-[#E5DED4] p-8 text-center shadow-2xl space-y-5 animate-scale-up">
+            <button
+              onClick={() => setDeleteTargetId(null)}
+              className="absolute top-4 right-4 p-2 text-[#77716A] hover:text-[#181615] hover:bg-[#FAF7F2] rounded-full transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="w-16 h-16 rounded-full bg-[#C62828]/10 border border-[#C62828]/20 text-[#C62828] mx-auto flex items-center justify-center shadow-inner">
+              <Trash2 className="w-7 h-7 text-[#C62828]" />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C62828]">
+                DELETE ADDRESS
+              </span>
+              <h3 className="font-serif-luxury text-2xl font-bold text-[#181615]">
+                Remove Address?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#77716A] leading-relaxed">
+                Are you sure you want to permanently delete this address from your saved address book?
+              </p>
+            </div>
+
+            <div className="pt-2 grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setDeleteTargetId(null)}
+                className="w-full py-3 bg-[#FAF7F2] hover:bg-[#EFE8DA] text-[#181615] border border-[#E5DED4] rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="w-full py-3 bg-[#C62828] hover:bg-[#B71C1C] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-md cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
